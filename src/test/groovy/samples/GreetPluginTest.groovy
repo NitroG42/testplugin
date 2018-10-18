@@ -1,24 +1,24 @@
+package samples
+
+
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
-
 
 class GreetPluginTest {
-
     @Test
-    fun `greeting message can be configured`() {
+    void testPlugin() {
 
-        val message = "Hello, TestKit!"
+        def message = "Hello, TestKit!"
 
-        val pluginBinaryDir = File("build/libs")
-        val pluginJar = pluginBinaryDir
-                .listFiles()
-                .first { it.name.endsWith("testplugin.jar") }
-                .absoluteFile
-                .invariantSeparatorsPath
+        def pluginBinaryDir = new File("build/libs")
+//        def pluginJar = pluginBinaryDir
+//                .listFiles()
+//                .first { it.name.endsWith("testplugin.jar") }
+//                .absoluteFile
+//                .invariantSeparatorsPath
 
 //            buildscript {
 //                repositories {
@@ -34,7 +34,7 @@ class GreetPluginTest {
 //            apply plugin: "com.android.application"
 //            apply plugin: "greet"
         // language=gradle
-        givenBuildScript("""
+        givenBuildScript('''
             plugins {
                 id "com.android.application" version "3.3.0-alpha13"
                 id "greet"
@@ -53,11 +53,11 @@ class GreetPluginTest {
             }
 
             greeting {
-                message = "$message"
+                message = "${message}"
             }
-        """)
+        ''')
 
-        givenSettingsScript("""
+        givenSettingsScript('''
             pluginManagement {
   repositories {
     gradlePluginPortal()
@@ -67,25 +67,23 @@ class GreetPluginTest {
   resolutionStrategy {
     eachPlugin {
       if (requested.id.id == "com.android.application") {
-        useModule("com.android.tools.build:gradle:${'$'}{requested.version}")
+        useModule("com.android.tools.build:gradle:${requested.version}")
       }
     }
   }
 }
-        """.trimIndent())
+''')
 
-        val main = temporaryFolder.newFolder("src", "main")
+        def main = temporaryFolder.newFolder("src", "main")
         //val main = File(app, "src/main")
         main.mkdirs()
-        val manifest = File(main, "AndroidManifest.xml")
-        manifest.apply {
-            writeText("""<?xml version="1.0" encoding="utf-8"?>
+        def manifest = new File(main, "AndroidManifest.xml")
+        manifest.write('''<?xml version="1.0" encoding="utf-8"?>
 <manifest package="fr.openium.greeting">
 
     <!-- This needs to be an empty element as workaround for https://code.google.com/p/android/issues/detail?id=77890 -->
 
-</manifest>""")
-        }
+</manifest>''')
 
         build("greet", "--stacktrace", "--info")
 //        assertThat(
@@ -94,33 +92,33 @@ class GreetPluginTest {
     }
 
     private
-    fun build(vararg arguments: String): BuildResult =
-            GradleRunner
-                    .create()
-                    .withProjectDir(temporaryFolder.root)
-                    .withPluginClasspath()
-                    .withArguments(*arguments)
-                    .forwardOutput()
+    BuildResult build(String... arguments) {
+        return GradleRunner.create()
+                .withProjectDir(temporaryFolder.root)
+                .withPluginClasspath()
+                .withArguments(*arguments)
+                .forwardOutput()
 //            .withDebug(true)
-                    .build()
+                .build()
+    }
+
 
     private
-    fun givenBuildScript(script: String) =
-            newFile("build.gradle").apply {
-                writeText(script)
-            }
+    void givenBuildScript(String script) {
+        newFile("build.gradle").write(script)
+    }
 
     private
-    fun givenSettingsScript(script: String) =
-            newFile("settings.gradle").apply {
-                writeText(script)
-            }
+    void givenSettingsScript(String script) {
+        newFile("settings.gradle").write(script)
+    }
 
     private
-    fun newFile(fileName: String): File =
-            temporaryFolder.newFile(fileName)
+    File newFile(String fileName) {
+        temporaryFolder.newFile(fileName)
+    }
+
 
     @Rule
-    @JvmField
-    val temporaryFolder = TemporaryFolder()
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder()
 }

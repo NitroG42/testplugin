@@ -13,7 +13,6 @@ class GreetPlugin : Plugin<Project> {
         val android = requireNotNull(project.the<AppExtension>()) {
             "The 'com.android.application' plugin is required."
         }
-        logger.info("starting")
         val greeting = extensions.create("greeting", Greeting::class)
         tasks {
             logger.info("tasks")
@@ -22,15 +21,15 @@ class GreetPlugin : Plugin<Project> {
                     println(greeting.message)
                 }
             }
-            project.afterEvaluate {
-                logger.info("afterEvaluate")
-                android.applicationVariants.forEach {
-                    //                    if (it.getBuildType().isDebuggable()) {
-                    logger.info("foreach")
-                    it.preBuild.dependsOn(greet)
-//                    }
-                }
-            }
+//            project.afterEvaluate {
+//                logger.info("afterEvaluate")
+//                android.applicationVariants.forEach {
+//                    //                    if (it.getBuildType().isDebuggable()) {
+//                    logger.info("foreach")
+//                    it.preBuild.dependsOn(greet)
+////                    }
+//                }
+//            }
         }
     }
 
