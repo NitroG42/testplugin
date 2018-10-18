@@ -21,3 +21,9 @@ repositories {
     google()
     jcenter()
 }
+
+
+tasks.withType<Test> {
+    // Our integration tests need a fully compiled jar
+    dependsOn("assemble")
+}
