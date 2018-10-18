@@ -14,7 +14,6 @@ gradlePlugin {
 
 dependencies {
     compileOnly("com.android.tools.build:gradle:3.1.4")
-//    testImplementation("com.android.tools.build:gradle:3.1.4")
     testImplementation("junit:junit:4.12")
 }
 

@@ -1,13 +1,7 @@
-
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-
-import org.gradle.kotlin.dsl.*
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.hamcrest.CoreMatchers.equalTo
-import org.junit.*
-import org.junit.Assert.assertThat
+import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 
@@ -21,7 +15,7 @@ class GreetPluginTest {
 
         givenBuildScript("""
             plugins {
-                id("com.android.application") version("3.1.4")
+                id("com.android.application") version("3.3.0-alpha13")
                 id("greet")
             }
             android {
@@ -57,19 +51,6 @@ class GreetPluginTest {
 }
         """.trimIndent())
 
-        newFile("local.properties").apply {
-            writeText("""
-                ## This file must *NOT* be checked into Version Control Systems,
-# as it contains information specific to your local configuration.
-#
-# Location of the SDK. This is only used by Gradle.
-# For customization when using a Version Control System, please read the
-# header note.
-#Thu Jun 14 19:19:29 CEST 2018
-sdk.dir=D\:\\Logiciel\\Dev\\android-sdk
-            """.trimIndent())
-        }
-
         val main = temporaryFolder.newFolder("src", "main")
         //val main = File(app, "src/main")
         main.mkdirs()
@@ -83,9 +64,10 @@ sdk.dir=D\:\\Logiciel\\Dev\\android-sdk
 </manifest>""")
         }
 
-        assertThat(
-                build("greet", "-q").output.trimEnd(),
-                equalTo(message))
+        build("greet", "--info", "--stacktrace")
+//        assertThat(
+//                build("greet").output.trimEnd(),
+//                equalTo(message))
     }
 
     private
@@ -95,6 +77,7 @@ sdk.dir=D\:\\Logiciel\\Dev\\android-sdk
                     .withProjectDir(temporaryFolder.root)
                     .withPluginClasspath()
                     .withArguments(*arguments)
+                    .forwardOutput()
 //            .withDebug(true)
                     .build()
 
